@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: banco-ias-backend
+
+  r2dbc:
+    url: ${DB_URL:r2dbc:mysql://localhost:3306/banco_ias}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD}
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+
+springdoc:
+  swagger-ui:
+    url: /openapi.yaml
+
+logging:
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+
+  level:
+    root: INFO
+    com.bancoias.backend: DEBUG
+    org.springframework.web.reactive.DispatcherHandler: DEBUG
+    org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping: TRACE
