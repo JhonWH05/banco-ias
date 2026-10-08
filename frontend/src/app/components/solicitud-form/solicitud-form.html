@@ -1,0 +1,132 @@
+<section class="contenedor">
+
+  <h2>Uso de preaprobado</h2>
+
+  <p>
+    Registra una solicitud para utilizar el cupo disponible.
+  </p>
+
+  <form (ngSubmit)="procesar()">
+
+    <div>
+      <label for="referencia">
+        Referencia de solicitud
+      </label>
+
+      <input
+        id="referencia"
+        name="referencia"
+        type="text"
+        [(ngModel)]="solicitud.referenciaSolicitud"
+        required>
+    </div>
+
+    <div>
+      <label for="preaprobado">
+        ID Preaprobado
+      </label>
+
+      <input
+        id="preaprobado"
+        name="preaprobado"
+        type="text"
+        [(ngModel)]="solicitud.idPreaprobado"
+        required>
+    </div>
+
+    <div>
+      <label for="cliente">
+        ID Cliente
+      </label>
+
+      <input
+        id="cliente"
+        name="cliente"
+        type="text"
+        [(ngModel)]="solicitud.idCliente"
+        required>
+    </div>
+
+    <div>
+      <label for="monto">
+        Monto
+      </label>
+
+      <input
+        id="monto"
+        name="monto"
+        type="number"
+        [(ngModel)]="solicitud.monto"
+        min="0.01"
+        required>
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="procesando()">
+
+      {{ procesando() ? 'Procesando...' : 'Procesar solicitud' }}
+
+    </button>
+
+  </form>
+
+
+  @if (resultado(); as resultado) {
+
+    <div class="resultado">
+
+      <h3>Resultado</h3>
+
+      <p>
+        <strong>Referencia:</strong>
+        {{ resultado.referenciaSolicitud }}
+      </p>
+
+      <p>
+        <strong>Preaprobado:</strong>
+        {{ resultado.idPreaprobado }}
+      </p>
+
+      <p>
+        <strong>Cliente:</strong>
+        {{ resultado.idCliente }}
+      </p>
+
+      <p>
+        <strong>Monto:</strong>
+        {{ resultado.monto }}
+      </p>
+
+      <p>
+        <strong>Estado:</strong>
+        {{ resultado.estado }}
+      </p>
+
+      <p>
+        <strong>Motivo:</strong>
+        {{ resultado.motivo }}
+      </p>
+
+      <p>
+        <strong>Fecha de procesamiento:</strong>
+        {{ resultado.fechaProcesamiento }}
+      </p>
+
+    </div>
+
+  }
+
+
+  @if (mensajeError()) {
+
+    <div class="error">
+
+      <strong>Error:</strong>
+      {{ mensajeError() }}
+
+    </div>
+
+  }
+
+</section>
