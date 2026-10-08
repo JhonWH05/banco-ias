@@ -1,59 +1,145 @@
-# BancoIasFrontend
+# BancoIAS - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.1.
+Aplicación web desarrollada en Angular para gestionar solicitudes de utilización de cupos preaprobados.
 
-## Development server
+Este proyecto forma parte de una prueba técnica Full Stack y consume una API REST desarrollada con Java y Spring Boot.
 
-To start a local development server, run:
+## 1. Tecnologías utilizadas
+
+- Angular 22
+- TypeScript
+- HTML y CSS
+- Angular Router
+- HttpClient
+- Node.js y npm
+
+## 2. Funcionalidades
+
+La aplicación permite realizar las siguientes operaciones:
+
+**Registrar solicitudes**
+
+Permite ingresar una referencia de solicitud, el identificador del preaprobado, el identificador del cliente y el monto solicitado. La información se envía al backend para su procesamiento.
+
+**Consultar solicitudes**
+
+Permite buscar una solicitud mediante su referencia y visualizar la información registrada, incluyendo el resultado de la operación.
+
+**Historial de solicitudes**
+
+Permite consultar las solicitudes procesadas y visualizar su estado, monto y demás información relevante.
+
+## 3. Requisitos previos
+
+Para ejecutar el proyecto es necesario contar con:
+
+- Node.js y npm
+- Angular CLI
+- Backend de BancoIAS configurado y en ejecución
+
+## 4. Instalación
+
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/JhonWH05/banco-ias-frontend.git
+```
+
+Ingresar a la carpeta del proyecto:
+
+```bash
+cd banco-ias-frontend
+```
+
+Instalar las dependencias:
+
+```bash
+npm install
+```
+
+## 5. Ejecución
+
+Iniciar el servidor de desarrollo:
+
+```bash
+npm start
+```
+
+También puede utilizarse:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Una vez iniciado, acceder desde el navegador a:
 
-## Code scaffolding
+http://localhost:4200
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 6. Comunicación con el backend
 
-```bash
-ng generate component component-name
+El frontend consume los servicios REST expuestos por el backend de BancoIAS.
+
+**URL base de la API:**
+
+```text
+http://localhost:8080/api/solicitudes
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+**Endpoints utilizados:**
 
-```bash
-ng generate --help
-```
+| Método | Endpoint | Descripción |
+|---|---|---|
+| POST | `/api/solicitudes` | Registrar una solicitud de utilización de cupo |
+| GET | `/api/solicitudes/{referenciaSolicitud}` | Consultar una solicitud por referencia |
+| GET | `/api/solicitudes` | Consultar el historial de solicitudes |
 
-## Building
+Para utilizar correctamente la aplicación, el backend debe estar ejecutándose en el puerto `8080`.
 
-To build the project run:
+El backend incluye una configuración CORS para permitir las solicitudes provenientes del frontend ejecutado en `http://localhost:4200`.
+
+## 7. Compilación
+
+Para verificar que el proyecto compile correctamente:
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los archivos generados se almacenan en el directorio `dist/`.
 
-## Running unit tests
+## 8. Estructura del proyecto
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```text
+src/
+├── app/
+│   ├── components/      # Componentes y pantallas
+│   ├── models/          # Interfaces y modelos de datos
+│   ├── services/        # Comunicación con la API REST
+│   ├── app.config.ts    # Configuración de Angular
+│   ├── app.routes.ts    # Rutas de navegación
+│   ├── app.ts           # Componente principal
+│   ├── app.html         # Plantilla principal
+│   └── app.css          # Estilos del componente principal
+├── index.html
+├── main.ts
+└── styles.css
 ```
 
-## Running end-to-end tests
+## 9. Repositorios
 
-For end-to-end (e2e) testing, run:
+**Frontend (Angular):**
 
-```bash
-ng e2e
-```
+https://github.com/JhonWH05/banco-ias-frontend
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+**Backend (Spring Boot):**
 
-## Additional Resources
+https://github.com/JhonWH05/banco-ias-backend
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+La configuración de la base de datos, las reglas de negocio, las pruebas automatizadas y la documentación de la API se encuentran en el repositorio del backend.
+
+## 10. Consideraciones
+
+- El frontend no se conecta directamente a MySQL; toda la información se consulta y procesa a través de la API REST.
+- La autorización o el rechazo de una solicitud es responsabilidad del backend.
+- La aplicación muestra los resultados devueltos por la API y permite consultar las operaciones registradas.
+- Para ejecutar el sistema completo se deben iniciar tanto el backend como el frontend.
