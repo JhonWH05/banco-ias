@@ -1,0 +1,340 @@
+
+openapi: 3.0.3
+
+info:
+  title: BancoIAS - API de Cupos Preaprobados
+  version: 1.0.0
+  description: |
+    API REST para gestionar solicitudes de uso de cupos preaprobados.
+
+    Funcionalidades:
+    - Validación del cliente y del cupo preaprobado.
+    - Autorización y rechazo de solicitudes.
+    - Control de disponibilidad del cupo.
+    - Idempotencia mediante referencia de solicitud.
+    - Consulta individual de solicitudes.
+    - Consulta de las últimas 20 solicitudes procesadas.
+    - Manejo centralizado de errores funcionales y de sistema.
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor local
+
+tags:
+  - name: Solicitudes
+    description: Gestión de solicitudes de uso de cupos preaprobados
+
+paths:
+
+  /api/solicitudes:
+    post:
+      tags:
+        - Solicitudes
+      summary: Procesar una solicitud de uso de cupo
+      description: |
+        Procesa una solicitud de uso de un cupo preaprobado.
+
+        Valida que:
+        - El preaprobado exista.
+        - El preaprobado pertenezca al cliente.
+        - El preaprobado esté activo.
+        - El monto solicitado sea mayor que cero.
+        - Exista cupo suficiente.
+
+        Las solicitudes procesadas se registran con estado
+        AUTHORIZED o REJECTED.
+
+        Si se repite una referencia con los mismos datos,
+        se devuelve el resultado previamente registrado.
+
+        Si se repite una referencia con datos diferentes,
+        se devuelve un error HTTP 409.
+
+      operationId: procesarSolicitud
+
+      requestBody:
+        required: true
+        description: Información de la solicitud
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolicitudUsoRequest'
+            example:
+              referenciaSolicitud: REF-001
+              idPreaprobado: PRA-1001
+              idCliente: USR-10
+              monto: 600000
+
+      responses:
+        '200':
+          description: |
+            Solicitud procesada correctamente.
+            El resultado puede ser AUTHORIZED o REJECTED.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudUsoResponse'
+              examples:
+                autorizada:
+                  summary: Solicitud autorizada
+                  value:
+                    referenciaSolicitud: REF-001
+                    idPreaprobado: PRA-1001
+                    idCliente: USR-10
+                    monto: 600000
+                    estado: AUTHORIZED
+                    motivo: Solicitud autorizada correctamente
+                    fechaProcesamiento: '2026-10-07T14:30:00'
+
+                rechazada:
+                  summary: Solicitud rechazada por cupo insuficiente
+                  value:
+                    referenciaSolicitud: REF-002
+                    idPreaprobado: PRA-1001
+                    idCliente: USR-10
+                    monto: 500000
+                    estado: REJECTED
+                    motivo: Cupo disponible insuficiente
+                    fechaProcesamiento: '2026-10-07T14:35:00'
+
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  tipo: FUNCIONAL
+                  codigo: "002"
+                  mensaje: Los datos enviados no son válidos
+
+        '409':
+          description: Referencia duplicada con información diferente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  tipo: FUNCIONAL
+                  codigo: "001"
+                  mensaje: La referencia ya existe con información diferente
+
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+    get:
+      tags:
+        - Solicitudes
+      summary: Consultar solicitudes recientes
+      description: |
+        Retorna las últimas 20 solicitudes procesadas,
+        ordenadas desde la más reciente hasta la más antigua.
+
+      operationId: consultarSolicitudesRecientes
+
+      responses:
+        '200':
+          description: Historial de solicitudes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SolicitudUsoResponse'
+              example:
+                - referenciaSolicitud: REF-001
+                  idPreaprobado: PRA-1001
+                  idCliente: USR-10
+                  monto: 600000
+                  estado: AUTHORIZED
+                  motivo: Solicitud autorizada correctamente
+                  fechaProcesamiento: '2026-10-07T14:30:00'
+
+                - referenciaSolicitud: REF-002
+                  idPreaprobado: PRA-1001
+                  idCliente: USR-10
+                  monto: 500000
+                  estado: REJECTED
+                  motivo: Cupo disponible insuficiente
+                  fechaProcesamiento: '2026-10-07T14:35:00'
+
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+  /api/solicitudes/{referenciaSolicitud}:
+    get:
+      tags:
+        - Solicitudes
+      summary: Consultar solicitud por referencia
+      description: |
+        Consulta la información de una solicitud previamente procesada
+        utilizando su referencia única.
+
+      operationId: consultarSolicitudPorReferencia
+
+      parameters:
+        - name: referenciaSolicitud
+          in: path
+          required: true
+          description: Referencia única de la solicitud
+          schema:
+            type: string
+          example: REF-001
+
+      responses:
+        '200':
+          description: Solicitud encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudUsoResponse'
+              example:
+                referenciaSolicitud: REF-001
+                idPreaprobado: PRA-1001
+                idCliente: USR-10
+                monto: 600000
+                estado: AUTHORIZED
+                motivo: Solicitud autorizada correctamente
+                fechaProcesamiento: '2026-10-07T14:30:00'
+
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  tipo: FUNCIONAL
+                  codigo: "003"
+                  mensaje: La solicitud no existe
+
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+components:
+
+  schemas:
+
+    SolicitudUsoRequest:
+      type: object
+      description: Datos necesarios para procesar una solicitud
+      required:
+        - referenciaSolicitud
+        - idPreaprobado
+        - idCliente
+        - monto
+      properties:
+        referenciaSolicitud:
+          type: string
+          minLength: 1
+          description: Identificador único de la solicitud
+          example: REF-001
+
+        idPreaprobado:
+          type: string
+          minLength: 1
+          description: Identificador del cupo preaprobado
+          example: PRA-1001
+
+        idCliente:
+          type: string
+          minLength: 1
+          description: Identificador del cliente
+          example: USR-10
+
+        monto:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Monto solicitado
+          example: 600000
+
+    SolicitudUsoResponse:
+      type: object
+      description: Resultado del procesamiento de una solicitud
+      properties:
+        referenciaSolicitud:
+          type: string
+          example: REF-001
+
+        idPreaprobado:
+          type: string
+          example: PRA-1001
+
+        idCliente:
+          type: string
+          example: USR-10
+
+        monto:
+          type: number
+          format: double
+          example: 600000
+
+        estado:
+          type: string
+          enum:
+            - AUTHORIZED
+            - REJECTED
+          example: AUTHORIZED
+
+        motivo:
+          type: string
+          nullable: true
+          description: Motivo del resultado del procesamiento
+          example: Solicitud autorizada correctamente
+
+        fechaProcesamiento:
+          type: string
+          format: date-time
+          description: Fecha y hora de procesamiento
+          example: '2026-10-07T14:30:00'
+
+    ErrorResponse:
+      type: object
+      description: Estructura estándar de errores de la API
+      required:
+        - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetalle'
+
+    ErrorDetalle:
+      type: object
+      required:
+        - tipo
+        - codigo
+        - mensaje
+      properties:
+        tipo:
+          type: string
+          enum:
+            - FUNCIONAL
+            - SISTEMA
+          example: FUNCIONAL
+
+        codigo:
+          type: string
+          description: Código interno del error
+          example: "003"
+
+        mensaje:
+          type: string
+          description: Descripción del error
+          example: La solicitud no existe
+
+  responses:
+
+    ErrorInterno:
+      description: Error interno del sistema
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              tipo: SISTEMA
+              codigo: "500"
+              mensaje: Ocurrió un error interno en el sistema
