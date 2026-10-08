@@ -2,7 +2,7 @@
 
 Aplicación web desarrollada en Angular para gestionar solicitudes de utilización de cupos preaprobados.
 
-Este proyecto forma parte de una prueba técnica Full Stack y consume una API REST desarrollada con Java y Spring Boot.
+Este proyecto fconsume una API REST desarrollada con Java y Spring Boot.
 
 ## 1. Tecnologías utilizadas
 
@@ -107,25 +107,7 @@ ng build
 
 Los archivos generados se almacenan en el directorio `dist/`.
 
-## 8. Estructura del proyecto
-
-```text
-src/
-├── app/
-│   ├── components/      # Componentes y pantallas
-│   ├── models/          # Interfaces y modelos de datos
-│   ├── services/        # Comunicación con la API REST
-│   ├── app.config.ts    # Configuración de Angular
-│   ├── app.routes.ts    # Rutas de navegación
-│   ├── app.ts           # Componente principal
-│   ├── app.html         # Plantilla principal
-│   └── app.css          # Estilos del componente principal
-├── index.html
-├── main.ts
-└── styles.css
-```
-
-## 9. Repositorios
+## 8. Repositorios
 
 **Frontend (Angular):**
 
