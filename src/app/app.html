@@ -1,0 +1,38 @@
+<main>
+
+  <header class="header">
+
+    <div class="marca">
+      <h1>BancoIAS</h1>
+      <p>Gestión de preaprobados</p>
+    </div>
+
+    <nav class="navegacion">
+
+      <a
+        routerLink="/solicitudes/nueva"
+        routerLinkActive="activo">
+        Nueva solicitud
+      </a>
+
+      <a
+        routerLink="/solicitudes/consultar"
+        routerLinkActive="activo">
+        Consultar
+      </a>
+
+      <a
+        routerLink="/solicitudes/historial"
+        routerLinkActive="activo">
+        Historial
+      </a>
+
+    </nav>
+
+  </header>
+
+  <section class="contenido">
+    <router-outlet></router-outlet>
+  </section>
+
+</main>

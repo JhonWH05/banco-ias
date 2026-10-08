@@ -1,0 +1,71 @@
+<section class="contenedor">
+
+  <div class="encabezado">
+    <div>
+      <h2>Solicitudes recientes</h2>
+      <p>Últimas solicitudes procesadas por BancoIAS.</p>
+    </div>
+
+    <button
+      type="button"
+      (click)="cargarSolicitudes()"
+      [disabled]="cargando()">
+
+      {{ cargando() ? 'Actualizando...' : 'Actualizar' }}
+
+    </button>
+  </div>
+
+  @if (mensajeError()) {
+    <div class="error">
+      {{ mensajeError() }}
+    </div>
+  }
+
+  @if (solicitudes().length > 0) {
+
+    <div class="tabla-contenedor">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Referencia</th>
+            <th>Preaprobado</th>
+            <th>Cliente</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Motivo</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (solicitud of solicitudes(); track solicitud.referenciaSolicitud) {
+
+            <tr>
+              <td>{{ solicitud.referenciaSolicitud }}</td>
+              <td>{{ solicitud.idPreaprobado }}</td>
+              <td>{{ solicitud.idCliente }}</td>
+              <td>{{ solicitud.monto }}</td>
+              <td>{{ solicitud.estado }}</td>
+              <td>{{ solicitud.motivo }}</td>
+              <td>{{ solicitud.fechaProcesamiento }}</td>
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  } @else if (!cargando()) {
+
+    <p>No hay solicitudes procesadas.</p>
+
+  }
+
+</section>

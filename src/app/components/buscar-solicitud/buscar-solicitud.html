@@ -1,0 +1,86 @@
+<section class="contenedor">
+
+  <h2>Consultar solicitud</h2>
+
+  <p>
+    Consulta una solicitud procesada mediante su referencia.
+  </p>
+
+  <form (ngSubmit)="buscar()">
+
+    <div>
+      <label for="referenciaBusqueda">
+        Referencia de solicitud
+      </label>
+
+      <input
+        id="referenciaBusqueda"
+        name="referenciaBusqueda"
+        type="text"
+        [(ngModel)]="referenciaSolicitud"
+        placeholder="Ej: REF-WEB-777"
+        required>
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="buscando()">
+
+      {{ buscando() ? 'Buscando...' : 'Buscar solicitud' }}
+
+    </button>
+
+  </form>
+
+  @if (resultado(); as resultado) {
+
+    <div class="resultado">
+
+      <h3>Solicitud encontrada</h3>
+
+      <p>
+        <strong>Referencia:</strong>
+        {{ resultado.referenciaSolicitud }}
+      </p>
+
+      <p>
+        <strong>Preaprobado:</strong>
+        {{ resultado.idPreaprobado }}
+      </p>
+
+      <p>
+        <strong>Cliente:</strong>
+        {{ resultado.idCliente }}
+      </p>
+
+      <p>
+        <strong>Monto:</strong>
+        {{ resultado.monto }}
+      </p>
+
+      <p>
+        <strong>Estado:</strong>
+        {{ resultado.estado }}
+      </p>
+
+      <p>
+        <strong>Motivo:</strong>
+        {{ resultado.motivo }}
+      </p>
+
+      <p>
+        <strong>Fecha:</strong>
+        {{ resultado.fechaProcesamiento }}
+      </p>
+
+    </div>
+
+  }
+
+  @if (mensajeError()) {
+    <div class="error">
+      {{ mensajeError() }}
+    </div>
+  }
+
+</section>
